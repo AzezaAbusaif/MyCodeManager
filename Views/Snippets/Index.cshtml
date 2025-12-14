@@ -1,75 +1,86 @@
 ﻿@model IEnumerable<MyCodeManager.Models.Snippet>
 
-@{
-    ViewData["Title"] = "my code library";
-}
+    @{
+    ViewData["Title"] = "Dashboard";
+    }
 
-<div class="container mt-5">
+    <style>
+        /* تصميم البطاقات الزجاجية */
+        .snippet-card {
+            background: rgba(40, 44, 52, 0.6); /* لون شفاف */
+            backdrop-filter: blur(10px); /* تأثير الضباب خلف البطاقة */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            transition: transform 0.3s, border-color 0.3s;
+        }
 
-    <div class="text-center mb-5">
-        <h1 class="display-4 fw-bold text-primary">📚 Smart Code Library</h1>
-        <p class="lead text-muted">Your place to store and retrieve your software solutions</p>
-    </div>
+            .snippet-card:hover {
+                transform: translateY(-5px);
+                border-color: rgba(52, 152, 219, 0.5); /* لون أزرق عند التحويم */
+            }
+        /* منطقة الكود المصغر */
+        .code-preview {
+            font-family: 'Consolas', monospace;
+            font-size: 0.8rem;
+            background-color: rgba(0,0,0,0.3);
+            color: #aab;
+            height: 100px;
+            overflow: hidden;
+            border-radius: 8px;
+            padding: 10px;
+            white-space: pre-wrap; /* الحفاظ على الأسطر */
+        }
+    </style>
 
-    <div class="row mb-4">
+    <div class="row justify-content-center mb-5">
         <div class="col-md-8">
-            <form asp-controller="Snippets" asp-action="Index" method="get">
-                <div class="input-group">
-                    <input type="text" name="searchString" class="form-control form-control-lg" placeholder="search (for example: C#, SQL)..." />
-                    <button class="btn btn-primary" type="submit">🔍search</button>
-                    <a asp-action="Index" class="btn btn-outline-secondary">show all</a>
+            <form asp-action="Index" method="get">
+                <div class="input-group input-group-lg">
+                    <span class="input-group-text bg-dark border-secondary text-muted"><i class="fas fa-search"></i></span>
+                    <input type="text" name="searchString" class="form-control bg-dark border-secondary text-white" placeholder="Search snippets...">
                 </div>
             </form>
         </div>
-        <div class="col-md-4 text-end">
-            <a asp-action="Create" class="btn btn-success btn-lg w-100 shadow-sm">+ add new code</a>
-        </div>
     </div>
 
-    <div class="row">
-        @if (!Model.Any())
-        {
-            <div class="col-12 text-center mt-5">
-                <div class="alert alert-warning"> No results match your search!🧐</div>
-            </div>
-        }
-
+    <div class="row g-4">
         @foreach (var item in Model)
-        {
-            <div class="col-md-4 mb-4">
-                <div class="card shadow-sm h-100 border-0">
-                    <div class="card-header d-flex justify-content-between align-items-center bg-dark text-white rounded-top">
-                        @{
-                            var badgeColor = "bg-secondary";
-                            if (item.Language == "C#") { badgeColor = "bg-primary"; }
-                            else if (item.Language == "HTML") { badgeColor = "bg-danger"; }
-                            else if (item.Language == "JavaScript") { badgeColor = "bg-warning text-dark"; }
-                            else if (item.Language == "SQL") { badgeColor = "bg-info text-dark"; }
-                        }
-                        <span class="badge @badgeColor">@item.Language</span>
+    {
+        var badgeColor = "bg-secondary"; var icon = "fa-code";
+        if (item.Language == "C#") { badgeColor = "bg-csharp"; icon = "fa-copyright"; }
+        else if (item.Language == "JavaScript") { badgeColor = "bg-js"; icon = "fa-brands fa-js"; }
+        else if (item.Language == "HTML/CSS") { badgeColor = "bg-html"; icon = "fa-brands fa-html5"; }
+        else if (item.Language == "SQL") { badgeColor = "bg-sql"; icon = "fa-database"; }
 
-                        <div>
-                            <a asp-action="Edit" asp-route-id="@item.Id" class="text-white me-2 text-decoration-none" title="Edit">✏️</a>
-                            <a asp-action="Delete" asp-route-id="@item.Id" class="text-danger text-decoration-none" title="delete">🗑️</a>
-                        </div>
-                    </div>
-                    <div class="card-body bg-light">
-                        <h5 class="card-title fw-bold d-flex justify-content-between">
-                            @item.Title
+        <div class="col-md-4">
+            <a asp-action="Details" asp-route-id="@item.Id" class="text-decoration-none text-white">
+                <div class="card snippet-card h-100 p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title mb-0 fw-bold text-truncate">
                             @if (item.IsFavorite)
                             {
-                                <span title="Favorite">⭐</span>
+                            <span class="text-warning me-1" title="Favorite">⭐</span>
                             }
+                            @item.Title
                         </h5>
-                        <div class="p-3 bg-dark text-white rounded mt-3" style="font-family: 'Consolas', monospace; font-size: 0.85em; height: 120px; overflow: hidden; opacity: 0.9;">
-                            @item.Code
-                        </div>
+                        <i class="fas fa-expand text-muted small opacity-50"></i>
                     </div>
-                    <div class="card-footer bg-white border-0 text-center pb-3">
-                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-dark btn-sm px-4 rounded-pill">show details</a>
+
+                    <div class="mb-3">
+                        <span class="nav-icon-circle @badgeColor d-inline-flex" style="width: 28px; height: 28px; font-size: 0.8rem;">
+                            @if(item.Language == "JavaScript") { <span>JS</span> }
+                            else if (item.Language == "HTML/CSS") { <span>H</span> }
+                            else if (item.Language == "SQL") { <span>SL</span> }
+                            else { <span>C#</span> }
+                        </span>
+                        <span class="text-muted small ms-2">@item.Language</span>
+                    </div>
+
+                    <div class="code-preview">
+                        @item.Code
                     </div>
                 </div>
-            </div>
-        }
+            </a>
+        </div>
+    }
     </div>
-</div>
