@@ -20,24 +20,49 @@ namespace MyCodeManager.Controllers
         }
 
         // هذه الدالة الجديدة تقبل كلمة بحث
-        public async Task<IActionResult> Index(string searchString)
+        // 1. دالة العرض المحدثة (تقبل بحث، لغة، ومفضلة)
+        public async Task<IActionResult> Index(string searchString, string lang, bool showFavorites)
         {
-            // 1. نجلب كل الأكواد مبدئياً
             var snippets = from s in _context.Snippet
                            select s;
 
-            // 2. إذا كتب المستخدم شيراً في البحث
-            if (!String.IsNullOrEmpty(searchString))
+            // فلتر المفضلة
+            if (showFavorites)
             {
-                // نبحث في العنوان (Title) أو اللغة (Language)
-                snippets = snippets.Where(s => s.Title.Contains(searchString)
-                                            || s.Language.Contains(searchString));
+                snippets = snippets.Where(s => s.IsFavorite == true);
+                ViewData["CurrentFilter"] = "Favorites"; // لتمييز العنوان
             }
 
-            // 3. نرجع النتائج النهائية للصفحة
+            // فلتر اللغة (من القائمة الجانبية)
+            if (!string.IsNullOrEmpty(lang))
+            {
+                snippets = snippets.Where(s => s.Language == lang);
+                ViewData["CurrentFilter"] = lang;
+            }
+
+            // البحث العام
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                snippets = snippets.Where(s => s.Title.Contains(searchString) || s.Code.Contains(searchString));
+                ViewData["CurrentFilter"] = $"Search: {searchString}";
+            }
+
             return View(await snippets.ToListAsync());
         }
 
+        // 2. دالة جديدة: تبديل حالة المفضلة عند الضغط على النجمة
+        public async Task<IActionResult> ToggleFavorite(int id)
+        {
+            var snippet = await _context.Snippet.FindAsync(id);
+            if (snippet != null)
+            {
+                // عكس الحالة (إذا كانت true تصبح false والعكس)
+                snippet.IsFavorite = !snippet.IsFavorite;
+                await _context.SaveChangesAsync();
+            }
+            // العودة لنفس الصفحة
+            return RedirectToAction(nameof(Index));
+        }
         // GET: Snippets/Details/5
         public async Task<IActionResult> Details(int? id)
         {
