@@ -7,8 +7,8 @@
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card shadow">
-                <div class="card-header bg-warning text-dark">
+            <div class="card shadow bg-dark text-white">
+                <div class="card-header bg-primary text-white">
                     <h3 class="mb-0">✏️ Edit Snippet</h3>
                 </div>
                 <div class="card-body">
@@ -17,36 +17,36 @@
 
                         <div class="form-group mb-3">
                             <label class="control-label fw-bold">Title</label>
-                            <input asp-for="Title" class="form-control" />
+                            <input asp-for="Title" class="form-control bg-secondary text-white border-0" />
                             <span asp-validation-for="Title" class="text-danger"></span>
                         </div>
 
                         <div class="form-group mb-3">
                             <label class="control-label fw-bold">Language</label>
-                            <select asp-for="Language" class="form-control">
+                            <select asp-for="Language" class="form-control bg-secondary text-white border-0">
                                 <option value="C#">C#</option>
                                 <option value="JavaScript">JavaScript</option>
-                                <option value="HTML">HTML</option>
+                                <option value="HTML/CSS">HTML/CSS</option>
                                 <option value="SQL">SQL</option>
-                                <option value="Python">Python</option>
-                                <option value="CSS">CSS</option>
                             </select>
                         </div>
 
                         <div class="form-group mb-3">
                             <label class="control-label fw-bold">Code</label>
-                            <textarea asp-for="Code" class="form-control font-monospace" rows="10"></textarea>
+                            <textarea asp-for="Code" class="form-control font-monospace bg-dark text-info border-secondary" rows="10"></textarea>
                             <span asp-validation-for="Code" class="text-danger"></span>
                         </div>
-                        <div class="form-check mb-3">
-                            <input class="form-check-input" type="checkbox" asp-for="IsFavorite" id="favCheck">
-                            <label class="form-check-label text-white" for="favCheck">
+
+                        <div class="form-check mb-4 p-3 bg-secondary rounded">
+                            <input class="form-check-input" type="checkbox" asp-for="IsFavorite" id="favCheck" style="transform: scale(1.3);">
+                            <label class="form-check-label fw-bold ms-2" for="favCheck">
                                 Mark as Favorite ⭐
                             </label>
                         </div>
+
                         <div class="form-group text-center mt-4">
-                            <input type="submit" value="Save Changes" class="btn btn-primary btn-lg px-5" />
-                            <a asp-action="Index" class="btn btn-secondary btn-lg ms-2">Cancel</a>
+                            <input type="submit" value="Save Changes" class="btn btn-success btn-lg px-5" />
+                            <a asp-action="Index" class="btn btn-outline-light btn-lg ms-2">Cancel</a>
                         </div>
                     </form>
                 </div>
